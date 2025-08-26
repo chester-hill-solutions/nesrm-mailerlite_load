@@ -4,10 +4,14 @@
   "description": "This is the NESRM_ETL_PIPELINE mail platform loader. It uses the generic mailerlite_load as a submodule but then has CI/CD workflows and connects to the production environment",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node ./tests/test.js",
+    "tests": "npm run test"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^17.2.1"
+  }
 }

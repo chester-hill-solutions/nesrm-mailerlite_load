@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { handler as apiHandler } from "./vendor/mailerlite_load/index.js";
 import HttpError from "./vendor/mailerlite_load/scripts/httpError.js";
 
