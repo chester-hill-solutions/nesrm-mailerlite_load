@@ -4,8 +4,10 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "**" # Trigger on any file change
+    # Optional: ignore docs or workflow-only changes
+    # paths-ignore:
+    #  - "*.md"
+    #  - ".github/**"
 
 jobs:
   deploy:
@@ -19,67 +21,57 @@ jobs:
       LAMBDA_FUNCTION_NAME: nesrm-mailerlite_load
 
     steps:
+      # Checkout repository with submodules
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # Fetch full history to detect all changes
+          fetch-depth: 0
+          submodules: recursive # ensures vendor/mailerlite_load is fully fetched
 
+      # Setup AWS CLI
       - name: Setup AWS CLI
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHub_Actions_Role
           aws-region: us-east-1
 
-      - name: Determine changed files
-        id: changes
+      # Create new package
+      - name: Creeate lambda package dir
         run: |
-          echo "CHANGED_FILES<<EOF" >> $GITHUB_OUTPUT
-          git diff --name-only ${{ github.event.before }} ${{ github.sha }} >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          mkdir lambda_env
 
-      - name: Download existing Lambda package (if exists)
+      # Download existing Lambda package (if exists)
+      # - name: Download existing Lambda package
+      #  run: |
+      #    if aws s3 ls s3://$S3_BUCKET/$S3_KEY ; then
+      #        aws s3 cp s3://$S3_BUCKET/$S3_KEY existing_lambda.zip
+      #        unzip -q existing_lambda.zip -d lambda_env
+      #    fi
+
+      # Copy entire repo into lambda_env
+      - name: Copy repository to lambda_env
+        #  run: |
+        #    rsync -a --exclude='.git*' --exclude='.env' --exclude='.github' --exclude='.gitmodules' ./ lambda_env/
         run: |
-          mkdir -p lambda_env
-          if aws s3 ls s3://$S3_BUCKET/$S3_KEY ; then
-              aws s3 cp s3://$S3_BUCKET/$S3_KEY existing_lambda.zip
-              unzip -q existing_lambda.zip -d lambda_env
-          fi
+          cp -r . lambda_env/
 
-      - name: Apply changed files
-        run: |
-          for file in $(git diff --name-only ${{ github.event.before }} ${{ github.sha }}); do
-            # Skip unwanted files
-            if [[ "$file" == *.env || "$file" == .gitmodules || "$file" == .git* || "$file" == .github/* ]]; then
-                echo "Skipping $file"
-                continue
-            fi
-
-            # Handle deleted files
-            if [ ! -f "$file" ]; then
-                if [ -f "lambda_env/$file" ]; then
-                    rm -f "lambda_env/$file"
-                    echo "Deleted lambda_env/$file"
-                fi
-                continue
-            fi
-
-            # Copy changed/added files
-            mkdir -p "lambda_env/$(dirname "$file")"
-            cp "$file" "lambda_env/$file"
-            echo "Copied $file to lambda_env/$file"
-          done
-
+      # Zip Lambda package
       - name: Zip Lambda package
         run: |
           cd lambda_env
-          zip -r ../updated-lambda.zip . -x "*.git*" "*.env" ".gitmodules" ".github/*"
+          zip -r ../updated-lambda.zip .
           cd ..
 
+      # Upload to S3 and update Lambda
       - name: Upload to S3 and update Lambda
         run: |
           aws s3 cp updated-lambda.zip s3://$S3_BUCKET/$S3_KEY
-          aws lambda update-function-code --function-name $LAMBDA_FUNCTION_NAME --s3-bucket $S3_BUCKET --s3-key $S3_KEY
+          aws lambda update-function-code \
+            --function-name $LAMBDA_FUNCTION_NAME \
+            --s3-bucket $S3_BUCKET \
+            --s3-key $S3_KEY
 
+      # Cleanup
       - name: Cleanup
         run: |
           rm -rf lambda_env existing_lambda.zip updated-lambda.zip
