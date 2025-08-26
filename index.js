@@ -1,9 +1,9 @@
-import { handler } from "./vendor/mailerlite_load/index.js";
+import { handler as apiHandler } from "./vendor/mailerlite_load/index.js";
 import { HttpError } from "./vendor/mailerlite_load/scripts/httpError.js";
 
 export const handler = async (event) => {
   try {
-    return handler(event);
+    return apiHandler(event);
   } catch (error) {
     return {
       statusCode: error.statusCode ? error.statusCode : 500,
