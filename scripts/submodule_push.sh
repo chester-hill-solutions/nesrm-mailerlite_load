@@ -4,6 +4,6 @@ git add .
 git commit
 git push origin main
 cd ../..
-git add .
-git commit
+git add vendor/mailerlite_load
+git commit -m 'Update submodule to latest'
 git push origin main
