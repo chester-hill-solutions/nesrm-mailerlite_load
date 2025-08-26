@@ -3,7 +3,8 @@ import HttpError from "./vendor/mailerlite_load/scripts/httpError.js";
 
 export const handler = async (event) => {
   try {
-    return apiHandler(event);
+    let result = await apiHandler(event);
+    return result;
   } catch (error) {
     return {
       statusCode: error.statusCode ? error.statusCode : 500,
