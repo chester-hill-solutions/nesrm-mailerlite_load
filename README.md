@@ -26,3 +26,7 @@ git push
 git submodule add https://github.com/your-org/repoA.git ./vendor/someUnusedPathName
 git submodule update --init --recursive
 ```
+
+#TODO
+
+- [ ] better gh workflow

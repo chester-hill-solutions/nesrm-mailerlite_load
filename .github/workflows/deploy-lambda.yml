@@ -47,7 +47,7 @@ jobs:
 
       - name: Apply changed files
         run: |
-          for file in ${{ steps.changes.outputs.CHANGED_FILES }} | while IFS= read -r file; do
+          for file in $(git diff --name-only ${{ github.event.before }} ${{ github.sha }}); do
             # Skip unwanted files
             if [[ "$file" == *.env || "$file" == .gitmodules || "$file" == .git* || "$file" == .github/* ]]; then
                 echo "Skipping $file"
