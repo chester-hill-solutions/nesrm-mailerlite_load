@@ -1,5 +1,6 @@
 import { handler } from "./vendor/mailerlite_load/index.js";
 import { HttpError } from "./vendor/mailerlite_load/scripts/httpError.js";
+
 export const handler = async (event) => {
   try {
     return handler(event);
