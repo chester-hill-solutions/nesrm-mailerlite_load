@@ -47,13 +47,12 @@ jobs:
       #        aws s3 cp s3://$S3_BUCKET/$S3_KEY existing_lambda.zip
       #        unzip -q existing_lambda.zip -d lambda_env
       #    fi
-
       # Copy entire repo into lambda_env
       - name: Copy repository to lambda_env
-        #  run: |
-        #    rsync -a --exclude='.git*' --exclude='.env' --exclude='.github' --exclude='.gitmodules' ./ lambda_env/
         run: |
           cp -r . lambda_env/
+          rsync -a --exclude='lambda_env' --exclude='.git*' --exclude='.env' --exclude='.github' ./ lambda_env/
+        # interesting quirk. rsync allegedly wouldn't exclude .github off of .git* alone. You need .git*/ but I haven't tested this
 
       # Zip Lambda package
       - name: Zip Lambda package
