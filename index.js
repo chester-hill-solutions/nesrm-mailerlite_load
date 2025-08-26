@@ -1,5 +1,5 @@
 import { handler as apiHandler } from "./vendor/mailerlite_load/index.js";
-import { HttpError } from "./vendor/mailerlite_load/scripts/httpError.js";
+import HttpError from "./vendor/mailerlite_load/scripts/httpError.js";
 
 export const handler = async (event) => {
   try {
