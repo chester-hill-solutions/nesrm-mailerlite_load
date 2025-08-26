@@ -50,7 +50,6 @@ jobs:
       # Copy entire repo into lambda_env
       - name: Copy repository to lambda_env
         run: |
-          cp -r . lambda_env/
           rsync -a --exclude='lambda_env' --exclude='.git*' --exclude='.env' --exclude='.github' ./ lambda_env/
         # interesting quirk. rsync allegedly wouldn't exclude .github off of .git* alone. You need .git*/ but I haven't tested this
 
