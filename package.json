@@ -6,9 +6,7 @@
   "scripts": {
     "test": "node ./tests/test.js",
     "tests": "npm run test",
-    "git_commit": "git add . && git commit -m 'npm run ran this commit'",
-    "submod_change": "git add . && git commit -m 'Submode Change' && git push origin main",
-    "submod": "cd vendor/mailerlite_load && npm run git_commit --prefix ../.. && git push origin main && cd ../.. && npm run submod_change"
+    "submod": "bash scripts/submodule_push.sh"
   },
   "keywords": [],
   "author": "",
