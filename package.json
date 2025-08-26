@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "node ./tests/test.js",
-    "tests": "npm run test"
+    "tests": "npm run test",
+    "git_commit": "git add . && git commit -m 'npm run ran this commit'",
+    "git_push": "echo \"$SSH_PRIVATE_KEY\" > temp_key && chmod 600 temp_key && GIT_SSH_COMMAND='ssh -i temp_key -o IdentitiesOnly=yes' git push origin main && rm temp_key",
+    "submod_change": "git add . && git commit -m 'Submode Change' && npm run git_push",
+    "submod": "cd vendor/mailerlite_load && npm run git_commit --prefix ../.. && npm run git_push --prefix ../.. && cd ../.. && npm run submod_change"
   },
   "keywords": [],
   "author": "",
