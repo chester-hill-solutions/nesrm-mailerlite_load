@@ -1,0 +1,6 @@
+[submodule "vendor"]
+	path = vendor
+	url = git@github.com:chester-hill-solutions/mailerlite_load.git
+[submodule "vendor/mailerlite_load"]
+	path = vendor/mailerlite_load
+	url = git@github.com:chester-hill-solutions/mailerlite_load.git
